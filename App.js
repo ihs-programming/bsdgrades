@@ -1,21 +1,43 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 
 import LoginScreen from './components/LoginScreen.js';
+import GradeScreen from './components/GradeScreen.js';
 
 export default class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
+      sessionid: null,
+      loggedIn: false,
     };
   }
 
+  componentWillMount () {
+    StatusBar.setHidden(true);
+  }
+
   render() {
+    let curScreen;
+    if (this.state.loggedIn) {
+      curScreen = (
+        <GradeScreen />
+      );
+    }
+    else {
+      curScreen = (
+        <LoginScreen onLogin={this.onLogin} />
+      );
+    }
     return (
       <View style={styles.container}>
-        <LoginScreen onLogin={() => console.log("Logged in!")} />
+        {curScreen}
       </View>
     );
+  }
+
+  onLogin = () => {
+    this.setState({loggedIn: true});
   }
 }
 
