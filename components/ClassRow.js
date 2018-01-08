@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     borderTopColor: 'grey',
     borderWidth: StyleSheet.hairlineWidth,
     width: '100%',
-    height: 60,
+    minHeight: 60,
   },
   period: {
     flex: 1,

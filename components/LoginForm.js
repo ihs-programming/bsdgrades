@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import cheerio from 'react-native-cheerio';
 
 import Config from '../debug_config.js';
+import Constants from '../config.js';
 
 export default class LoginForm extends Component {
   constructor (props) {
@@ -16,8 +17,7 @@ export default class LoginForm extends Component {
   }
 
   logout = () => {
-    const LOGOUT_URL='https://wa-bsd405-psv.edupoint.com/Login_Student_PXP.aspx?Logout=1';
-    fetch(LOGOUT_URL);
+    fetch(Constants.LOGOUT_URL);
   }
 
   render() {
@@ -64,7 +64,7 @@ export default class LoginForm extends Component {
     }
 
     const INVALID_LOGIN_MESSAGE='Invalid login';
-    return fetch(SYNERGY_URL,
+    return fetch(Constants.LOGIN_URL,
       {
         method: 'POST',
         body: formData,

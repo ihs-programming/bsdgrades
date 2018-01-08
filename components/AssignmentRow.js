@@ -8,10 +8,17 @@ export default class AssignmentRow extends Component {
       <View style={styles.container}>
         <Text style={styles.name}> {this.props.name} </Text>
         <Text style={styles.date}> {this.props.date} </Text>
-        <Text style={styles.score}> {this.props.score} </Text>
+        <Text style={styles.score}>
+          {this.simplifyScore(this.props.score)}
+        </Text>
       </View>
     );
         //<Text style={styles.points}> {this.props.points} </Text>
+  }
+
+  simplifyScore = (scoreString) => {
+    let scoreParts = scoreString.split(' ');
+    return scoreParts[0] + '/' + scoreParts[scoreParts.length-1];
   }
 }
 
@@ -30,10 +37,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     width: '100%',
-    height: 30,
+    minHeight: 30,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'grey',
+    borderBottomColor: 'grey',
   },
   name: {
-    flex: 4,
+    flex: 2,
   },
   date: {
     flex: 1,

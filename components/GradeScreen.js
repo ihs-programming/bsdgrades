@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Button, StyleSheet, Text, View, ScrollView } from 'react-native';
 import PropTypes from 'prop-types';
 import cheerio from 'react-native-cheerio';
 
@@ -22,18 +22,16 @@ export default class GradeScreen extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        {this.renderGrades()}
-      </View>
-    );
-  }
-
-  renderGrades = () => {
     if (this.state.viewAssignments < 0) {
       return (
         <View style={styles.container}>
-          <Text style={styles.gradeheader}> Grades </Text>
+          <View style={styles.header}>
+            <Button
+              title="Logout"
+              style={styles.backButton}
+              onPress={this.props.logout} />
+            <Text style={styles.gradeheader}> Grades </Text>
+          </View>
           <View style={styles.gradelist}>
             {this.renderGradeList()}
           </View>
@@ -43,9 +41,17 @@ export default class GradeScreen extends Component {
     else {
       return (
         <View style={styles.container}>
-          <Text style={styles.gradeheader}> Assignments </Text>
+          <View style={styles.header}>
+            <Button
+              title="<-"
+              style={styles.backButton}
+              onPress={() => this.setState({viewAssignments: -1})} />
+            <Text style={styles.assignheader}> Assignments </Text>
+          </View>
           <View style={styles.assignments}>
-            {this.renderAssignmentList()}
+            <ScrollView>
+              {this.renderAssignmentList()}
+            </ScrollView>
           </View>
         </View>
       )
@@ -55,7 +61,6 @@ export default class GradeScreen extends Component {
   renderAssignmentList = () => {
     let assignments = this.state.gradeInfo[this.state.viewAssignments].assignments;
     return assignments.map((row, i) => {
-      console.log("Loaded assignment");
       return (
         <AssignmentRow
           key={i+row.lastRefreshed}
@@ -112,11 +117,17 @@ export default class GradeScreen extends Component {
 
   parseAssignments = (html) => {
     let $ = cheerio.load(html);
-    let assignmentTable = $('table.info_tbl').eq(1);
+    let assignmentTable;
+    let info_tables = $('table.info_tbl');
+    if (info_tables.length == 3) {
+      assignmentTable = info_tables.eq(1);
+    }
+    else {
+      assignmentTable = info_tables.eq(0);
+    }
     let assignmentRows = assignmentTable.find('tr.altrow1, tr.altrow2');
     let parsedAssignments = [];
 
-    console.log("Parsing", assignmentRows.length);
     assignmentRows.each((i, elem) => {
       const keys = [
         'date', 'assignment', 'assignmenttype', 'resources', 'score',
@@ -159,7 +170,7 @@ export default class GradeScreen extends Component {
       let values = $(elem).children().map((i, childElem) => {
         return $(childElem).find('a').text();
       });
-      let classLinkExt = classRows.first().find('a').attr('href');
+      let classLinkExt = $(elem).first().find('a').attr('href');
       cls.link = SYNERGY_BASE_URL + classLinkExt;
       cls.lastRefreshed = Date();
 
@@ -174,26 +185,45 @@ export default class GradeScreen extends Component {
 }
 
 GradeScreen.propTypes = {
+  logout: PropTypes.func.isRequired,
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     flexDirection: 'column',
+    width: '100%',
   },
   gradelist: {
     flex: 8,
+  },
+  header: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backButton: {
+    flex: 1,
+    textAlignVertical: 'center',
   },
   gradeheader: {
     flex: 1,
     fontSize: 30,
     marginTop: 20,
     marginBottom: -10,
+    textAlign: 'center',
   },
-  graderow: {
-    flex: 1,
-    flexDirection: 'row',
+  assignments: {
+    flex: 8,
+    width: '100%',
+  },
+  assignheader: {
+    flex: 7,
+    fontSize: 30,
+    marginTop: 20,
+    marginBottom: -10,
+    textAlign: 'center',
   },
 });

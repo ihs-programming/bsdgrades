@@ -21,7 +21,7 @@ export default class App extends Component {
     let curScreen;
     if (this.state.loggedIn) {
       curScreen = (
-        <GradeScreen />
+        <GradeScreen logout={this.logout}/>
       );
     }
     else {
@@ -38,6 +38,10 @@ export default class App extends Component {
 
   onLogin = () => {
     this.setState({loggedIn: true});
+  }
+
+  logout = () => {
+    this.setState({loggedIn: false});
   }
 }
 
